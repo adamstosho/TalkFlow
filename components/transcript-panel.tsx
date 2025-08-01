@@ -63,19 +63,19 @@ export function TranscriptPanel({ transcript, currentSentence = "", isTranscribi
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+      <div className="p-3 sm:p-4 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
         <div className="flex items-center justify-between mb-2">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-white font-['Lexend_Deca']">Live Transcript</h2>
-          <div className="flex items-center space-x-2">
+          <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white font-['Lexend_Deca']">Live Transcript</h2>
+          <div className="flex items-center space-x-1 sm:space-x-2">
             {isTranscribing && (
-              <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+              <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-xs">
                 <Mic className="w-3 h-3 mr-1" />
                 Live
               </Badge>
             )}
             <Badge variant="outline" className="text-xs">
               <Clock className="w-3 h-3 mr-1" />
-              {transcript.length} lines
+              {transcript.length}
             </Badge>
           </div>
         </div>
@@ -112,70 +112,65 @@ export function TranscriptPanel({ transcript, currentSentence = "", isTranscribi
 
       {/* Transcript Content */}
       <div className="flex-1 overflow-hidden">
-        <ScrollArea 
-          className="h-full" 
-          ref={scrollRef}
-          onScroll={handleScroll}
-        >
-          <div className="p-4 space-y-3">
-            {transcript.length === 0 && !currentSentence ? (
-              <div className="text-center py-12 text-slate-500 dark:text-slate-400">
-                <Mic className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p className="text-sm font-medium mb-2">No transcript yet</p>
-                <p className="text-xs">Start speaking to see your conversation here</p>
+        <ScrollArea className="h-full">
+          <div
+            ref={scrollRef}
+            onScroll={handleScroll}
+            className="p-3 sm:p-4 space-y-3"
+          >
+            {transcript.length === 0 && !currentSentence && (
+              <div className="text-center py-8">
+                <Mic className="w-12 h-12 text-slate-400 mx-auto mb-3" />
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Start speaking to see your transcript here
+                </p>
               </div>
-            ) : (
-              <>
-                {/* Completed transcript lines */}
-                {transcript.map((line, index) => (
-                  <Card key={index} className="p-4 bg-slate-50 dark:bg-slate-700 border-0 shadow-sm">
-                    <div className="flex items-start space-x-3">
-                      <Badge variant="outline" className="text-xs mt-0.5 shrink-0 bg-slate-200 dark:bg-slate-600">
-                        {index + 1}
-                      </Badge>
-                      <div className="flex-1 min-w-0">
-                        <p
-                          className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed"
-                          dangerouslySetInnerHTML={{ __html: highlightKeywords(line) }}
-                        />
-                        <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-                          {new Date().toLocaleTimeString()}
-                        </div>
+            )}
+
+            {/* Historical Transcript */}
+            {transcript.map((line, index) => (
+              <Card key={index} className="p-3 sm:p-4 bg-white dark:bg-slate-800 shadow-sm">
+                <div className="flex items-start space-x-2">
+                  <div className="flex-shrink-0 w-6 h-6 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center">
+                    <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                      {index + 1}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p
+                      className="text-sm sm:text-base text-slate-900 dark:text-white leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: highlightKeywords(line) }}
+                    />
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                      {new Date().toLocaleTimeString()}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            ))}
+
+            {/* Current Live Sentence */}
+            {currentSentence && (
+              <Card className="p-3 sm:p-4 bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 shadow-sm">
+                <div className="flex items-start space-x-2">
+                  <div className="flex-shrink-0 w-6 h-6 bg-green-100 dark:bg-green-800 rounded-full flex items-center justify-center">
+                    <Mic className="w-3 h-3 text-green-600 dark:text-green-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm sm:text-base text-slate-900 dark:text-white leading-relaxed">
+                      {currentSentence}
+                    </p>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <span className="text-xs text-green-600 dark:text-green-400 font-medium">Live</span>
+                      <div className="flex space-x-1">
+                        <div className="w-1 h-1 bg-green-500 rounded-full animate-pulse" />
+                        <div className="w-1 h-1 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
+                        <div className="w-1 h-1 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
                       </div>
                     </div>
-                  </Card>
-                ))}
-
-                {/* Current sentence being spoken */}
-                {currentSentence && (
-                  <Card className="p-4 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 shadow-sm">
-                    <div className="flex items-start space-x-3">
-                      <Badge variant="outline" className="text-xs mt-0.5 shrink-0 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                        Live
-                      </Badge>
-                      <div className="flex-1 min-w-0">
-                        <p
-                          className="text-sm text-blue-700 dark:text-blue-300 leading-relaxed italic"
-                          dangerouslySetInnerHTML={{ __html: highlightKeywords(currentSentence) }}
-                        />
-                        <div className="mt-2 text-xs text-blue-500 dark:text-blue-400">
-                          Speaking now...
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                )}
-
-                {/* Listening indicator */}
-                {isTranscribing && !currentSentence && (
-                  <Card className="p-4 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-                      <p className="text-sm text-blue-700 dark:text-blue-300 italic">Listening for speech...</p>
-                    </div>
-                  </Card>
-                )}
-              </>
+                  </div>
+                </div>
+              </Card>
             )}
           </div>
         </ScrollArea>

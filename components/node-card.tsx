@@ -3,36 +3,28 @@
 import { useState, useRef, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import type { ViewMode } from "@/app/meeting/page"
-import { cn } from "@/lib/utils"
-import { Edit3, X, Check, Move } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Move, Edit3, X } from "lucide-react"
 
 interface NodeCardProps {
   text: string
-  level: number
-  viewMode: ViewMode
-  isNew?: boolean
   nodeType?: "start" | "process" | "decision" | "end"
   isSelected?: boolean
   isEditing?: boolean
-  onEdit?: (newText: string) => void
+  onEdit?: (text: string) => void
   onEditCancel?: () => void
   onResizeStart?: (e: React.MouseEvent) => void
 }
 
-export function NodeCard({ 
-  text, 
-  level, 
-  viewMode, 
-  isNew = false, 
+export function NodeCard({
+  text,
   nodeType = "process",
   isSelected = false,
   isEditing = false,
   onEdit,
   onEditCancel,
-  onResizeStart
+  onResizeStart,
 }: NodeCardProps) {
   const [editText, setEditText] = useState(text)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -48,114 +40,8 @@ export function NodeCard({
     }
   }, [isEditing])
 
-  const getNodeStyle = () => {
-    const baseStyle = "border-2 transition-all duration-300"
-    
-    switch (viewMode) {
-      case "mindmap":
-        return cn(
-          baseStyle,
-          level === 0
-            ? "bg-indigo-100 dark:bg-indigo-900 border-indigo-300 dark:border-indigo-700 text-indigo-900 dark:text-indigo-100"
-            : "bg-sky-50 dark:bg-sky-900/50 border-sky-200 dark:border-sky-800 text-sky-900 dark:text-sky-100"
-        )
-      case "flowchart":
-        const flowchartStyle = cn(baseStyle)
-        switch (nodeType) {
-          case "start":
-            return cn(flowchartStyle, "bg-green-100 dark:bg-green-900 border-green-300 dark:border-green-700 text-green-900 dark:text-green-100")
-          case "end":
-            return cn(flowchartStyle, "bg-red-100 dark:bg-red-900 border-red-300 dark:border-red-700 text-red-900 dark:text-red-100")
-          case "decision":
-            return cn(flowchartStyle, "bg-amber-100 dark:bg-amber-900 border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-100")
-          default:
-            return cn(flowchartStyle, "bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white")
-        }
-      case "outline":
-        return cn(
-          baseStyle,
-          level === 0
-            ? "bg-amber-50 dark:bg-amber-900/50 border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-100"
-            : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
-        )
-      default:
-        return cn(baseStyle, "bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600")
-    }
-  }
-
-  const getNodeShape = () => {
-    switch (viewMode) {
-      case "mindmap":
-        return level === 0 ? "rounded-2xl" : "rounded-xl"
-      case "flowchart":
-        switch (nodeType) {
-          case "start":
-          case "end":
-            return "rounded-full" // Oval for start/end
-          case "decision":
-            return "transform rotate-45" // Diamond for decisions
-          default:
-            return "rounded-lg" // Rectangle for processes
-        }
-      case "outline":
-        return "rounded-md"
-      default:
-        return "rounded-lg"
-    }
-  }
-
-  const getNodeSize = () => {
-    if (viewMode === "outline") {
-      return level === 0 ? "min-w-[300px]" : "min-w-[250px]"
-    }
-    if (viewMode === "flowchart") {
-      switch (nodeType) {
-        case "start":
-        case "end":
-          return "w-32 h-16" // Oval size
-        case "decision":
-          return "w-40 h-40" // Diamond size
-        default:
-          return "min-w-[200px] max-w-[300px]" // Process size
-      }
-    }
-    return level === 0 ? "min-w-[200px] max-w-[300px]" : "min-w-[150px] max-w-[250px]"
-  }
-
-  const getNodeLabel = () => {
-    if (viewMode === "flowchart") {
-      switch (nodeType) {
-        case "start":
-          return "Start"
-        case "end":
-          return "End"
-        case "decision":
-          return "Decision"
-        default:
-          return level === 0 ? "Process" : "Step"
-      }
-    }
-    return level === 0 ? "Main Idea" : "Detail"
-  }
-
-  const getNodeIcon = () => {
-    if (viewMode === "flowchart") {
-      switch (nodeType) {
-        case "start":
-          return "▶"
-        case "end":
-          return "■"
-        case "decision":
-          return "?"
-        default:
-          return "⚙"
-      }
-    }
-    return null
-  }
-
   const handleEditSave = () => {
-    if (onEdit && editText.trim()) {
+    if (onEdit && editText.trim() !== text) {
       onEdit(editText.trim())
     }
   }
@@ -166,127 +52,168 @@ export function NodeCard({
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
       handleEditSave()
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       handleEditCancel()
     }
   }
 
-  const highlightKeywords = (text: string) => {
-    const keywords = ["project", "task", "idea", "goal", "plan", "step", "process", "workflow", "meeting", "discussion", "strategy", "implementation"]
-    let highlightedText = text
+  const getNodeStyle = () => {
+    switch (nodeType) {
+      case "start":
+        return "bg-green-100 dark:bg-green-900/20 border-green-300 dark:border-green-700 text-green-800 dark:text-green-200"
+      case "end":
+        return "bg-red-100 dark:bg-red-900/20 border-red-300 dark:border-red-700 text-red-800 dark:text-red-200"
+      case "decision":
+        return "bg-amber-100 dark:bg-amber-900/20 border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-200"
+      default:
+        return "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
+    }
+  }
 
-    keywords.forEach((keyword) => {
-      const regex = new RegExp(`\\b${keyword}\\b`, "gi")
-      highlightedText = highlightedText.replace(
-        regex,
-        `<span class="bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 px-1 rounded">${keyword}</span>`,
-      )
-    })
+  const getNodeShape = () => {
+    switch (nodeType) {
+      case "start":
+      case "end":
+        return "rounded-full"
+      case "decision":
+        return "rounded-lg"
+      default:
+        return "rounded-lg"
+    }
+  }
 
-    return highlightedText
+  const getNodeSize = () => {
+    switch (nodeType) {
+      case "start":
+      case "end":
+        return "w-24 h-24"
+      case "decision":
+        return "w-32 h-32"
+      default:
+        return "w-full h-full"
+    }
+  }
+
+  const getNodeLabel = () => {
+    switch (nodeType) {
+      case "start":
+        return "START"
+      case "end":
+        return "END"
+      case "decision":
+        return "DECISION"
+      default:
+        return "PROCESS"
+    }
+  }
+
+  const getNodeIcon = () => {
+    switch (nodeType) {
+      case "start":
+        return "▶"
+      case "end":
+        return "■"
+      case "decision":
+        return "◇"
+      default:
+        return "●"
+    }
   }
 
   return (
     <Card
-      className={cn(
-        "p-3 shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer flex items-center justify-center relative group",
-        getNodeStyle(),
-        getNodeShape(),
-        getNodeSize(),
-        isNew && "animate-in slide-in-from-bottom-4 duration-500",
-        viewMode === "flowchart" && nodeType === "decision" && "aspect-square",
-        isSelected && "ring-4 ring-blue-400 ring-opacity-50 shadow-xl",
-        isEditing && "ring-4 ring-green-400 ring-opacity-50",
-      )}
+      className={`relative group transition-all duration-200 ${getNodeStyle()} ${getNodeShape()} ${getNodeSize()} ${
+        isSelected ? "ring-2 ring-blue-500 ring-offset-2" : ""
+      } ${isEditing ? "ring-2 ring-indigo-500" : ""}`}
     >
-      {/* Selection indicator */}
-      {isSelected && !isEditing && (
-        <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs shadow-lg">
-          <Move className="w-3 h-3" />
-        </div>
-      )}
-
-      {/* Resize handle */}
-      {isSelected && !isEditing && (
-        <div 
-          className="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 rounded-full cursor-se-resize shadow-lg"
-          onMouseDown={onResizeStart}
-        />
-      )}
-
-      {/* Edit mode */}
       {isEditing ? (
-        <div className="w-full space-y-2">
+        <div className="p-2 h-full flex flex-col">
           <Textarea
             ref={textareaRef}
             value={editText}
             onChange={(e) => setEditText(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="min-h-[60px] resize-none border-0 bg-transparent focus:ring-0 text-sm"
+            onBlur={handleEditSave}
+            className="flex-1 resize-none border-0 bg-transparent text-sm focus:ring-0"
             placeholder="Enter text..."
           />
-          <div className="flex justify-end space-x-1">
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={handleEditCancel}
-              className="h-6 w-6 p-0"
-            >
-              <X className="w-3 h-3" />
-            </Button>
+          <div className="flex justify-end space-x-1 mt-2">
             <Button
               size="sm"
               variant="ghost"
               onClick={handleEditSave}
-              className="h-6 w-6 p-0"
+              className="h-6 px-2 text-xs"
             >
-              <Check className="w-3 h-3" />
+              Save
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleEditCancel}
+              className="h-6 px-2 text-xs"
+            >
+              <X className="w-3 h-3" />
             </Button>
           </div>
         </div>
       ) : (
-        <div className={cn(
-          "space-y-2 text-center w-full",
-          viewMode === "flowchart" && nodeType === "decision" && "transform -rotate-45"
-        )}>
-          {viewMode === "flowchart" && (
-            <Badge variant="secondary" className="text-xs bg-white/50 dark:bg-black/20 mb-2">
-              {getNodeIcon()} {getNodeLabel()}
-            </Badge>
+        <div className="p-3 h-full flex flex-col justify-center relative">
+          {/* Selection Indicator */}
+          {isSelected && (
+            <div className="absolute -top-2 -left-2 bg-blue-500 text-white rounded-full p-1 shadow-lg">
+              <Move className="w-3 h-3" />
+            </div>
           )}
-          {level === 0 && viewMode !== "flowchart" && (
-            <Badge variant="secondary" className="text-xs bg-white/50 dark:bg-black/20">
-              {getNodeLabel()}
-            </Badge>
+
+          {/* Resize Handle */}
+          {isSelected && (
+            <div
+              className="absolute -bottom-1 -right-1 w-3 h-3 bg-blue-500 rounded-full cursor-se-resize shadow-lg"
+              onMouseDown={onResizeStart}
+            />
           )}
-          <p 
-            className={cn(
-              "text-sm leading-relaxed",
-              level === 0 ? "font-medium" : "font-normal",
-              viewMode === "flowchart" && nodeType === "decision" && "text-xs"
-            )}
-            dangerouslySetInnerHTML={{ __html: highlightKeywords(text) }}
-          />
-          
-          {/* Edit button (visible on hover when selected) */}
+
+          {/* Edit Button */}
           {isSelected && (
             <Button
               size="sm"
               variant="ghost"
               onClick={() => onEdit?.(text)}
-              className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute -top-2 -right-2 h-6 w-6 p-0 bg-white dark:bg-slate-800 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
             >
               <Edit3 className="w-3 h-3" />
             </Button>
           )}
+
+          {/* Node Content */}
+          <div className="text-center">
+            {/* Node Type Badge */}
+            <Badge
+              variant="secondary"
+              className={`text-xs mb-2 ${
+                nodeType === "start" || nodeType === "end"
+                  ? "bg-white/20 text-current"
+                  : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+              }`}
+            >
+              {getNodeLabel()}
+            </Badge>
+
+            {/* Node Text */}
+            <p className="text-xs sm:text-sm font-medium leading-tight break-words">
+              {text.length > 50 ? `${text.substring(0, 50)}...` : text}
+            </p>
+
+            {/* Node Icon for Start/End */}
+            {(nodeType === "start" || nodeType === "end") && (
+              <div className="mt-2 text-lg">{getNodeIcon()}</div>
+            )}
+          </div>
         </div>
       )}
-
-      {/* Hover effect indicator */}
-      <div className="absolute inset-0 rounded-inherit bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
     </Card>
   )
 }

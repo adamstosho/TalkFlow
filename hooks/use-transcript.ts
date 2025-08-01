@@ -2,11 +2,97 @@
 
 import { useState, useCallback, useRef, useEffect } from "react"
 
+interface SessionData {
+  transcript: string[]
+  timestamp: number
+  viewMode: string
+}
+
 export function useTranscript() {
   const [transcript, setTranscript] = useState<string[]>([])
   const [isTranscribing, setIsTranscribing] = useState(false)
   const [currentSentence, setCurrentSentence] = useState("")
   const recognitionRef = useRef<SpeechRecognition | null>(null)
+
+  // Load session from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedSession = localStorage.getItem('talkflow-session')
+      if (savedSession) {
+        const sessionData: SessionData = JSON.parse(savedSession)
+        const sessionAge = Date.now() - sessionData.timestamp
+        const maxAge = 24 * 60 * 60 * 1000 // 24 hours
+        
+        // Only restore if session is less than 24 hours old
+        if (sessionAge < maxAge) {
+          setTranscript(sessionData.transcript || [])
+          console.log('Session restored from localStorage')
+        } else {
+          // Clear old session
+          localStorage.removeItem('talkflow-session')
+        }
+      }
+    } catch (error) {
+      console.error('Error loading session from localStorage:', error)
+    }
+  }, [])
+
+  // Save session to localStorage whenever transcript changes
+  useEffect(() => {
+    if (transcript.length > 0) {
+      try {
+        const sessionData: SessionData = {
+          transcript,
+          timestamp: Date.now(),
+          viewMode: 'mindmap' // Default view mode
+        }
+        localStorage.setItem('talkflow-session', JSON.stringify(sessionData))
+      } catch (error) {
+        console.error('Error saving session to localStorage:', error)
+      }
+    }
+  }, [transcript])
+
+  // Clear session from localStorage
+  const clearSession = useCallback(() => {
+    try {
+      localStorage.removeItem('talkflow-session')
+      setTranscript([])
+      setCurrentSentence("")
+      console.log('Session cleared from localStorage')
+    } catch (error) {
+      console.error('Error clearing session from localStorage:', error)
+    }
+  }, [])
+
+  // Save current view mode
+  const saveViewMode = useCallback((viewMode: string) => {
+    try {
+      const savedSession = localStorage.getItem('talkflow-session')
+      if (savedSession) {
+        const sessionData: SessionData = JSON.parse(savedSession)
+        sessionData.viewMode = viewMode
+        sessionData.timestamp = Date.now()
+        localStorage.setItem('talkflow-session', JSON.stringify(sessionData))
+      }
+    } catch (error) {
+      console.error('Error saving view mode to localStorage:', error)
+    }
+  }, [])
+
+  // Get saved view mode
+  const getSavedViewMode = useCallback((): string => {
+    try {
+      const savedSession = localStorage.getItem('talkflow-session')
+      if (savedSession) {
+        const sessionData: SessionData = JSON.parse(savedSession)
+        return sessionData.viewMode || 'mindmap'
+      }
+    } catch (error) {
+      console.error('Error getting saved view mode from localStorage:', error)
+    }
+    return 'mindmap'
+  }, [])
 
   useEffect(() => {
     // Check if browser supports speech recognition
@@ -107,5 +193,8 @@ export function useTranscript() {
     isTranscribing,
     startTranscription,
     stopTranscription,
+    clearSession,
+    saveViewMode,
+    getSavedViewMode,
   }
 }
