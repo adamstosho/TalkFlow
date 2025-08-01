@@ -169,7 +169,7 @@ export function useTranscript() {
     if (recognitionRef.current) {
       try {
         recognitionRef.current.start()
-        setIsTranscribing(true)
+    setIsTranscribing(true)
         setCurrentSentence("")
       } catch (error) {
         console.error('Failed to start speech recognition:', error)
@@ -182,7 +182,7 @@ export function useTranscript() {
   const stopTranscription = useCallback(() => {
     if (recognitionRef.current) {
       recognitionRef.current.stop()
-      setIsTranscribing(false)
+    setIsTranscribing(false)
       setCurrentSentence("")
     }
   }, [])

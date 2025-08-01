@@ -13,46 +13,26 @@ interface ViewSwitcherProps {
 }
 
 export function ViewSwitcher({ currentMode, onModeChange }: ViewSwitcherProps) {
-  const modes: { key: ViewMode; label: string; icon: React.ReactNode; description: string }[] = [
-    { key: "mindmap", label: "Mind Map", icon: <Brain className="w-4 h-4" />, description: "Radial organization" },
-    { key: "flowchart", label: "Flowchart", icon: <GitBranch className="w-4 h-4" />, description: "Process flow" },
-    { key: "outline", label: "Outline", icon: <List className="w-4 h-4" />, description: "Linear structure" },
+  const modes: { key: ViewMode; label: string; icon: React.ReactNode }[] = [
+    { key: "mindmap", label: "Mind Map", icon: <Brain className="w-4 h-4" /> },
+    { key: "flowchart", label: "Flowchart", icon: <GitBranch className="w-4 h-4" /> },
+    { key: "outline", label: "Outline", icon: <List className="w-4 h-4" /> },
   ]
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+    <div className="space-y-2">
       {modes.map((mode) => (
         <Button
           key={mode.key}
           onClick={() => onModeChange(mode.key)}
           variant={currentMode === mode.key ? "default" : "outline"}
           className={cn(
-            "h-auto p-3 flex flex-col items-center space-y-2 transition-all duration-200",
-            currentMode === mode.key 
-              ? "bg-indigo-500 hover:bg-indigo-600 text-white border-indigo-500" 
-              : "hover:bg-slate-50 dark:hover:bg-slate-800"
+            "w-full justify-start transition-all duration-200",
+            currentMode === mode.key && "bg-indigo-500 hover:bg-indigo-600",
           )}
         >
-          <div className={cn(
-            "w-4 h-4",
-            currentMode === mode.key ? "text-white" : "text-slate-600 dark:text-slate-400"
-          )}>
-            {mode.icon}
-          </div>
-          <div className="text-center">
-            <div className={cn(
-              "text-xs font-medium",
-              currentMode === mode.key ? "text-white" : "text-slate-900 dark:text-white"
-            )}>
-              {mode.label}
-            </div>
-            <div className={cn(
-              "text-xs",
-              currentMode === mode.key ? "text-indigo-100" : "text-slate-500 dark:text-slate-400"
-            )}>
-              {mode.description}
-            </div>
-          </div>
+          {mode.icon}
+          <span className="ml-2">{mode.label}</span>
         </Button>
       ))}
     </div>

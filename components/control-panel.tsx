@@ -1,11 +1,13 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
+import { MicButton } from "@/components/mic-button"
 import { ViewSwitcher } from "@/components/view-switcher"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { Mic, MicOff, Activity, RotateCcw, Info } from "lucide-react"
 import type { ViewMode } from "@/app/meeting/page"
+import { Save, RotateCcw, Settings, Activity, Clock } from "lucide-react"
 
 interface ControlPanelProps {
   isRecording: boolean
@@ -16,141 +18,116 @@ interface ControlPanelProps {
   onExport: () => void
 }
 
-export function ControlPanel({
-  isRecording,
-  onMicToggle,
-  viewMode,
-  onViewModeChange,
-  onNewSession,
-  onExport,
+export function ControlPanel({ 
+  isRecording, 
+  onMicToggle, 
+  viewMode, 
+  onViewModeChange, 
+  onNewSession 
 }: ControlPanelProps) {
   return (
-    <div className="flex flex-col h-full p-4 space-y-4">
+    <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="text-center pb-4 border-b border-slate-200 dark:border-slate-700">
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-white font-['Lexend_Deca']">Controls</h2>
-        <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">Manage your session</p>
+      <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-white font-['Lexend_Deca'] mb-1">Controls</h2>
+        <p className="text-xs text-slate-600 dark:text-slate-400">Manage your session and diagram</p>
       </div>
 
-      {/* Recording Controls */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base font-['Lexend_Deca'] flex items-center">
-            <Activity className="w-4 h-4 mr-2" />
-            Recording
-          </CardTitle>
-          <CardDescription>Start or stop voice transcription</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Button
-            onClick={onMicToggle}
-            className={`w-full h-12 text-base font-medium ${
-              isRecording
-                ? "bg-red-500 hover:bg-red-600 text-white"
-                : "bg-indigo-500 hover:bg-indigo-600 text-white"
-            }`}
-          >
-            {isRecording ? (
-              <>
-                <MicOff className="w-5 h-5 mr-2" />
-                Stop Recording
-              </>
-            ) : (
-              <>
-                <Mic className="w-5 h-5 mr-2" />
-                Start Recording
-              </>
-            )}
-          </Button>
-          
-          {isRecording && (
-            <div className="flex items-center justify-center space-x-2 p-2 bg-red-50 dark:bg-red-900/20 rounded-lg">
-              <div className="flex space-x-1">
-                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
-                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
-              </div>
-              <span className="text-sm text-red-700 dark:text-red-300 font-medium">Recording...</span>
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-6">
+        {/* Session Status */}
+        <Card className="p-4 border-0 shadow-sm bg-blue-50 dark:bg-blue-950/20">
+          <div className="flex items-center space-x-2 mb-3">
+            <Clock className="w-4 h-4 text-blue-500" />
+            <h3 className="text-sm font-medium text-slate-900 dark:text-white font-['Lexend_Deca']">Session Status</h3>
+          </div>
+          <div className="text-center">
+            <div className="flex items-center justify-center space-x-2 mb-2">
+              <Save className="w-4 h-4 text-blue-500" />
+              <span className="text-sm text-blue-700 dark:text-blue-300 font-medium">
+                Auto-save enabled
+              </span>
             </div>
-          )}
-        </CardContent>
+            <p className="text-xs text-blue-600 dark:text-blue-400">
+              Your session is automatically saved to your browser
+            </p>
+          </div>
+        </Card>
+
+      {/* Recording Controls */}
+        <Card className="p-4 border-0 shadow-sm bg-gradient-to-br from-indigo-50 to-sky-50 dark:from-indigo-950 dark:to-sky-950">
+          <div className="flex items-center space-x-2 mb-3">
+            <Activity className="w-4 h-4 text-indigo-500" />
+            <h3 className="text-sm font-medium text-slate-900 dark:text-white font-['Lexend_Deca']">Recording</h3>
+          </div>
+        <div className="flex flex-col items-center space-y-4">
+          <MicButton isRecording={isRecording} onClick={onMicToggle} size="md" />
+            <div className="text-center">
+              <p className="text-xs text-slate-600 dark:text-slate-400 mb-1">
+            {isRecording ? "Recording in progress..." : "Click to start recording"}
+          </p>
+              {isRecording && (
+                <div className="flex items-center justify-center space-x-1">
+                  <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
+                  <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
+                  <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
+                </div>
+              )}
+            </div>
+        </div>
       </Card>
 
-      {/* View Mode Controls */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base font-['Lexend_Deca']">View Mode</CardTitle>
-          <CardDescription>Choose how to visualize your ideas</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ViewSwitcher currentMode={viewMode} onModeChange={onViewModeChange} />
-        </CardContent>
+      {/* View Controls */}
+        <Card className="p-4 border-0 shadow-sm">
+          <div className="flex items-center space-x-2 mb-3">
+            <Settings className="w-4 h-4 text-slate-500" />
+            <h3 className="text-sm font-medium text-slate-900 dark:text-white font-['Lexend_Deca']">View Mode</h3>
+          </div>
+        <ViewSwitcher currentMode={viewMode} onModeChange={onViewModeChange} />
       </Card>
 
-      {/* Session Management */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base font-['Lexend_Deca']">Session Status</CardTitle>
-          <CardDescription>Your session is automatically saved</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
+      <Separator />
+        <Card className="p-4 border-0 shadow-sm">
+          <div className="flex items-center space-x-2 mb-3">
+            <RotateCcw className="w-4 h-4 text-slate-500" />
+            <h3 className="text-sm font-medium text-slate-900 dark:text-white font-['Lexend_Deca']">Session</h3>
+          </div>
+        <div className="space-y-2">
           <Button
-            onClick={onNewSession}
+            className="w-full justify-start bg-transparent"
             variant="outline"
-            className="w-full justify-start"
+              onClick={onNewSession}
           >
             <RotateCcw className="w-4 h-4 mr-2" />
             New Session
           </Button>
-          <div className="text-xs text-slate-500 dark:text-slate-400 text-center">
-            Click to clear all data and start fresh
-          </div>
-        </CardContent>
+            <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
+              Start fresh and clear current session
+            </p>
+        </div>
       </Card>
 
-      {/* Appearance */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base font-['Lexend_Deca']">Appearance</CardTitle>
-          <CardDescription>Customize the interface</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+        {/* Quick Tips */}
+        <Card className="p-4 border-0 shadow-sm bg-amber-50 dark:bg-amber-950/20">
+          <h3 className="text-sm font-medium text-amber-900 dark:text-amber-100 mb-2">💡 Quick Tips</h3>
+          <ul className="text-xs text-amber-800 dark:text-amber-200 space-y-1">
+            <li>• Your session is automatically saved</li>
+            <li>• Speak naturally - no special commands needed</li>
+            <li>• Switch views to see different visualizations</li>
+            <li>• Drag the canvas to pan around</li>
+            <li>• Use zoom controls for detailed view</li>
+            <li>• Click nodes to select and edit them</li>
+          </ul>
+        </Card>
+      </div>
+
+      {/* Footer */}
+      <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+          <div className="flex items-center justify-between">
             <span className="text-sm text-slate-600 dark:text-slate-400">Theme</span>
             <ThemeToggle />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Quick Tips */}
-      <Card className="mt-auto">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base font-['Lexend_Deca'] flex items-center">
-            <Info className="w-4 h-4 mr-2" />
-            Quick Tips
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-            <div className="flex items-start space-x-2">
-              <span className="text-indigo-500 font-medium">•</span>
-              <span>Drag nodes to reposition them</span>
-            </div>
-            <div className="flex items-start space-x-2">
-              <span className="text-indigo-500 font-medium">•</span>
-              <span>Double-click nodes to edit text</span>
-            </div>
-            <div className="flex items-start space-x-2">
-              <span className="text-indigo-500 font-medium">•</span>
-              <span>Use mouse wheel to zoom canvas</span>
-            </div>
-            <div className="flex items-start space-x-2">
-              <span className="text-indigo-500 font-medium">•</span>
-              <span>Your session auto-saves locally</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }
