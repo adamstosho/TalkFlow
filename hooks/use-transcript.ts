@@ -14,21 +14,18 @@ export function useTranscript() {
   const [currentSentence, setCurrentSentence] = useState("")
   const recognitionRef = useRef<SpeechRecognition | null>(null)
 
-  // Load session from localStorage on mount
   useEffect(() => {
     try {
       const savedSession = localStorage.getItem('talkflow-session')
       if (savedSession) {
         const sessionData: SessionData = JSON.parse(savedSession)
         const sessionAge = Date.now() - sessionData.timestamp
-        const maxAge = 24 * 60 * 60 * 1000 // 24 hours
+        const maxAge = 24 * 60 * 60 * 1000 
         
-        // Only restore if session is less than 24 hours old
         if (sessionAge < maxAge) {
           setTranscript(sessionData.transcript || [])
           console.log('Session restored from localStorage')
         } else {
-          // Clear old session
           localStorage.removeItem('talkflow-session')
         }
       }
@@ -37,14 +34,13 @@ export function useTranscript() {
     }
   }, [])
 
-  // Save session to localStorage whenever transcript changes
   useEffect(() => {
     if (transcript.length > 0) {
       try {
         const sessionData: SessionData = {
           transcript,
           timestamp: Date.now(),
-          viewMode: 'mindmap' // Default view mode
+          viewMode: 'mindmap' 
         }
         localStorage.setItem('talkflow-session', JSON.stringify(sessionData))
       } catch (error) {
@@ -53,7 +49,6 @@ export function useTranscript() {
     }
   }, [transcript])
 
-  // Clear session from localStorage
   const clearSession = useCallback(() => {
     try {
       localStorage.removeItem('talkflow-session')
@@ -65,7 +60,6 @@ export function useTranscript() {
     }
   }, [])
 
-  // Save current view mode
   const saveViewMode = useCallback((viewMode: string) => {
     try {
       const savedSession = localStorage.getItem('talkflow-session')
@@ -80,7 +74,6 @@ export function useTranscript() {
     }
   }, [])
 
-  // Get saved view mode
   const getSavedViewMode = useCallback((): string => {
     try {
       const savedSession = localStorage.getItem('talkflow-session')
@@ -95,25 +88,21 @@ export function useTranscript() {
   }, [])
 
   useEffect(() => {
-    // Check if browser supports speech recognition
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
       console.warn('Speech recognition not supported in this browser')
       return
     }
 
-    // Initialize speech recognition
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
     recognitionRef.current = new SpeechRecognition()
     
     const recognition = recognitionRef.current
     
-    // Configure recognition settings
     recognition.continuous = true
     recognition.interimResults = true
     recognition.lang = 'en-US'
     recognition.maxAlternatives = 1
 
-    // Handle speech recognition results
     recognition.onresult = (event) => {
       let interimTranscript = ""
       let finalTranscript = ""
@@ -127,10 +116,8 @@ export function useTranscript() {
         }
       }
 
-      // Update current sentence with interim results
       setCurrentSentence(interimTranscript)
 
-      // Add final sentences to transcript
       if (finalTranscript) {
         const sentences = finalTranscript
           .split(/[.!?]+/)
@@ -138,26 +125,23 @@ export function useTranscript() {
           .filter(s => s.length > 0)
         
         sentences.forEach(sentence => {
-          if (sentence.length > 3) { // Only add meaningful sentences
+          if (sentence.length > 3) { 
             setTranscript(prev => [...prev, sentence])
           }
         })
       }
     }
 
-    // Handle recognition errors
     recognition.onerror = (event) => {
       console.error('Speech recognition error:', event.error)
       setIsTranscribing(false)
     }
 
-    // Handle recognition end
     recognition.onend = () => {
       setIsTranscribing(false)
       setCurrentSentence("")
     }
 
-    // Cleanup on unmount
     return () => {
       if (recognitionRef.current) {
         recognitionRef.current.stop()

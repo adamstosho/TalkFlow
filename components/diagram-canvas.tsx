@@ -38,7 +38,6 @@ export function DiagramCanvas({ transcript, viewMode }: DiagramCanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    // Generate nodes from transcript with better positioning
     const newNodes: DiagramNode[] = transcript.map((line, index) => {
       const words = line.split(" ")
       const isMainIdea = words.length > 8 || line.includes("project") || line.includes("goal") || line.includes("plan")
@@ -50,7 +49,6 @@ export function DiagramCanvas({ transcript, viewMode }: DiagramCanvasProps) {
       
       switch (viewMode) {
         case "mindmap":
-          // Radial layout for mind map
           const angle = (index * 60) % 360
           const radius = 200 + (index * 50)
           x = 400 + Math.cos((angle * Math.PI) / 180) * radius
@@ -59,7 +57,6 @@ export function DiagramCanvas({ transcript, viewMode }: DiagramCanvasProps) {
           break
           
         case "flowchart":
-          // Professional flowchart layout
           const centerX = 500
           const startY = 100
           const stepY = 180
@@ -74,13 +71,11 @@ export function DiagramCanvas({ transcript, viewMode }: DiagramCanvasProps) {
             y = startY + (index * stepY)
             nodeType = "end"
           } else if (isDecision) {
-            // Decisions alternate left and right
             const side = Math.floor(index / 2) % 2 === 0 ? 1 : -1
             x = centerX + (side * 300)
             y = startY + (index * stepY)
             nodeType = "decision"
           } else {
-            // Regular processes
             const side = Math.floor(index / 2) % 2 === 0 ? 1 : -1
             x = centerX + (side * 200)
             y = startY + (index * stepY)
@@ -89,7 +84,6 @@ export function DiagramCanvas({ transcript, viewMode }: DiagramCanvasProps) {
           break
           
         case "outline":
-          // Linear layout for outline
           x = 100
           y = 100 + index * 100
           nodeType = "process"
@@ -126,7 +120,7 @@ export function DiagramCanvas({ transcript, viewMode }: DiagramCanvasProps) {
   }
 
   const handleCanvasMouseDown = (e: React.MouseEvent) => {
-    if (e.button === 0 && !draggedNode && !selectedNode) { // Left click only, no node interaction
+    if (e.button === 0 && !draggedNode && !selectedNode) { 
       setIsDragging(true)
       setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y })
     }
@@ -293,24 +287,20 @@ export function DiagramCanvas({ transcript, viewMode }: DiagramCanvasProps) {
 
   const getConnectionPath = (startX: number, startY: number, endX: number, endY: number, nodeType?: string) => {
     if (viewMode === "flowchart") {
-      // Create curved paths for flowchart
       const midX = (startX + endX) / 2
       const midY = (startY + endY) / 2
       
       if (nodeType === "decision") {
-        // For decisions, create a more complex path
         const controlX1 = startX + (endX - startX) * 0.3
         const controlY1 = startY
         const controlX2 = endX - (endX - startX) * 0.3
         const controlY2 = endY
         return `M ${startX} ${startY} C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${endX} ${endY}`
       } else {
-        // For regular processes, use straight lines with slight curve
         return `M ${startX} ${startY} Q ${midX} ${midY} ${endX} ${endY}`
       }
     }
     
-    // Default straight line for other views
     return `M ${startX} ${startY} L ${endX} ${endY}`
   }
 
@@ -325,7 +315,6 @@ export function DiagramCanvas({ transcript, viewMode }: DiagramCanvasProps) {
       onClick={handleCanvasClick}
       style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
     >
-      {/* Canvas Header */}
       <div className="absolute top-4 left-4 z-20">
         <Card className="px-3 py-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border-0 shadow-lg">
           <div className="flex items-center space-x-2">
@@ -335,7 +324,6 @@ export function DiagramCanvas({ transcript, viewMode }: DiagramCanvasProps) {
         </Card>
       </div>
 
-      {/* Zoom Controls */}
       <div className="absolute top-4 right-4 z-20">
         <Card className="p-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border-0 shadow-lg">
           <div className="flex items-center space-x-1">
@@ -372,7 +360,6 @@ export function DiagramCanvas({ transcript, viewMode }: DiagramCanvasProps) {
         </Card>
       </div>
 
-      {/* Canvas Content */}
       <div 
         className="absolute inset-0 p-8 transition-transform duration-200"
         style={{
@@ -395,7 +382,6 @@ export function DiagramCanvas({ transcript, viewMode }: DiagramCanvasProps) {
           </div>
         ) : (
           <div className="relative w-full h-full min-h-[800px]">
-            {/* Connection Lines */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none">
               {nodes.map((node) =>
                 node.connections.map((connectionId) => {
@@ -417,7 +403,6 @@ export function DiagramCanvas({ transcript, viewMode }: DiagramCanvasProps) {
                         strokeDasharray={viewMode === "outline" ? "5,5" : "0"}
                         className="opacity-60"
                       />
-                      {/* Arrow for flowchart */}
                       {viewMode === "flowchart" && (
                         <polygon
                           points={`${endX - 10},${endY - 5} ${endX},${endY} ${endX - 10},${endY + 5}`}
@@ -431,7 +416,6 @@ export function DiagramCanvas({ transcript, viewMode }: DiagramCanvasProps) {
               )}
             </svg>
 
-            {/* Nodes */}
             {nodes.map((node, index) => (
               <div
                 key={node.id}
@@ -466,7 +450,6 @@ export function DiagramCanvas({ transcript, viewMode }: DiagramCanvasProps) {
         )}
       </div>
 
-      {/* Grid Background */}
       <div
         className="absolute inset-0 opacity-20"
         style={{
@@ -480,7 +463,6 @@ export function DiagramCanvas({ transcript, viewMode }: DiagramCanvasProps) {
         }}
       />
 
-      {/* Instructions */}
       {nodes.length > 0 && (
         <div className="absolute bottom-4 left-4 z-20">
           <Card className="px-3 py-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border-0 shadow-lg">

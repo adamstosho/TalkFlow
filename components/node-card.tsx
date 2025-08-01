@@ -91,11 +91,11 @@ export function NodeCard({
         switch (nodeType) {
           case "start":
           case "end":
-            return "rounded-full" // Oval for start/end
+            return "rounded-full" 
           case "decision":
-            return "transform rotate-45" // Diamond for decisions
+            return "transform rotate-45" 
           default:
-            return "rounded-lg" // Rectangle for processes
+            return "rounded-lg" 
         }
       case "outline":
         return "rounded-md"
@@ -112,11 +112,11 @@ export function NodeCard({
       switch (nodeType) {
         case "start":
         case "end":
-          return "w-32 h-16" // Oval size
+          return "w-32 h-16"
         case "decision":
-          return "w-40 h-40" // Diamond size
+          return "w-40 h-40"
         default:
-          return "min-w-[200px] max-w-[300px]" // Process size
+          return "min-w-[200px] max-w-[300px]" 
       }
     }
     return level === 0 ? "min-w-[200px] max-w-[300px]" : "min-w-[150px] max-w-[250px]"

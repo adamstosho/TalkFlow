@@ -10,6 +10,7 @@ import { useTranscript } from "@/hooks/use-transcript"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Menu, Mic } from "lucide-react"
 import Link from "next/link"
+import { Logo } from "@/components/logo"
 
 export type ViewMode = "mindmap" | "flowchart" | "outline"
 
@@ -28,7 +29,6 @@ export default function MeetingPage() {
     getSavedViewMode
   } = useTranscript()
 
-  // Load saved view mode on mount
   useEffect(() => {
     const savedViewMode = getSavedViewMode() as ViewMode
     if (savedViewMode && ['mindmap', 'flowchart', 'outline'].includes(savedViewMode)) {
@@ -36,7 +36,6 @@ export default function MeetingPage() {
     }
   }, [getSavedViewMode])
 
-  // Save view mode when it changes
   useEffect(() => {
     saveViewMode(viewMode)
   }, [viewMode, saveViewMode])
@@ -74,8 +73,9 @@ export default function MeetingPage() {
             </Link>
           </Button>
           <div className="flex items-center space-x-3">
+            <Logo size="sm" animated={false} />
             <h1 className="text-lg font-semibold text-slate-900 dark:text-white font-['Lexend_Deca']">
-              TalkFlow Session
+              Session
             </h1>
             {transcript.length > 0 && (
               <div className="flex items-center space-x-2 px-2 py-1 bg-blue-100 dark:bg-blue-900/20 rounded-full">

@@ -13,7 +13,12 @@ export const metadata: Metadata = {
   title: "TalkFlow - Voice-to-Visual Meeting Translator",
   description:
     "Transform your voice into dynamic diagrams, mind maps, and flowcharts in real-time. Perfect for visual thinkers and collaborative meetings.",
-    generator: 'v0.dev'
+  generator: 'TalkFlow',
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
 }
 
 export default function RootLayout({

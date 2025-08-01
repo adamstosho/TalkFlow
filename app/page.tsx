@@ -6,8 +6,8 @@ import { ArrowRight, Brain, Mic, Zap, Download, Users, Sparkles, CheckCircle } f
 import Link from "next/link"
 import { motion, useScroll, useTransform, useInView } from "framer-motion"
 import { useRef, useEffect, useState } from "react"
+import { Logo } from "@/components/logo"
 
-// Floating particles component
 const FloatingParticles = () => {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
@@ -45,7 +45,6 @@ const FloatingParticles = () => {
   )
 }
 
-// Animated gradient background
 const AnimatedGradient = () => {
   return (
     <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-indigo-50 to-sky-50 dark:from-slate-900 dark:via-indigo-950 dark:to-slate-900">
@@ -67,7 +66,6 @@ const AnimatedGradient = () => {
   )
 }
 
-// Feature card with hover animations
 const FeatureCard = ({ icon: Icon, title, description, color, delay }: any) => {
   const [isHovered, setIsHovered] = useState(false)
   
@@ -136,8 +134,8 @@ export default function HomePage() {
     },
     {
       icon: Download,
-      title: "Multiple Export Formats",
-      description: "Export your visual diagrams as PNG images, PDF documents, or plain text.",
+      title: "Persistence Storage of Diagrams",
+      description: "Your diagrams are saved and can be accessed later. No need to worry about losing your work.",
       color: "bg-amber-100 dark:bg-amber-900 text-amber-500"
     },
     {
@@ -173,20 +171,7 @@ export default function HomePage() {
         className="container mx-auto px-4 py-6 relative z-10"
       >
         <nav className="flex items-center justify-between">
-          <motion.div
-            className="flex items-center space-x-2"
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            <motion.div
-              className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center"
-              whileHover={{ rotate: 360 }}
-              transition={{ duration: 0.6 }}
-            >
-              <Brain className="w-5 h-5 text-white" />
-            </motion.div>
-            <span className="text-xl font-bold text-slate-900 dark:text-white font-['Lexend_Deca']">TalkFlow</span>
-          </motion.div>
+          <Logo size="md" animated={true} />
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -264,14 +249,6 @@ export default function HomePage() {
                 </Link>
               </Button>
             </motion.div>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button size="lg" variant="outline" className="px-8 py-4 text-lg rounded-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm">
-                Watch Demo
-              </Button>
-            </motion.div>
           </motion.div>
 
           {/* Demo Preview */}
@@ -287,7 +264,7 @@ export default function HomePage() {
                 {[
                   { color: "bg-sky-500", title: "Speak Naturally", desc: "Just talk - no special commands needed" },
                   { color: "bg-amber-500", title: "Watch It Build", desc: "See your ideas become visual diagrams" },
-                  { color: "bg-indigo-500", title: "Export & Share", desc: "Save as PNG, PDF, or text format" }
+                  { color: "bg-indigo-500", title: "Persistence", desc: "Your diagrams are saved and can be accessed later" }
                 ].map((item, index) => (
                   <motion.div
                     key={index}
