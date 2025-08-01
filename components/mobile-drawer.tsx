@@ -5,9 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TranscriptPanel } from "@/components/transcript-panel"
 import { ViewSwitcher } from "@/components/view-switcher"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { Button } from "@/components/ui/button"
 import type { ViewMode } from "@/app/meeting/page"
-import { Download, Settings } from "lucide-react"
+import { Settings } from "lucide-react"
 
 interface MobileDrawerProps {
   isOpen: boolean
@@ -57,14 +56,6 @@ export function MobileDrawer({
                 View Mode
               </h3>
               <ViewSwitcher currentMode={viewMode} onModeChange={onViewModeChange} />
-            </div>
-
-            <div>
-              <h3 className="text-sm font-medium text-slate-900 dark:text-white mb-3 font-['Lexend_Deca']">Export</h3>
-              <Button onClick={onExport} className="w-full justify-start bg-transparent" variant="outline">
-                <Download className="w-4 h-4 mr-2" />
-                Export Diagram
-              </Button>
             </div>
 
             <div>

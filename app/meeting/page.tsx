@@ -5,7 +5,6 @@ import { MicButton } from "@/components/mic-button"
 import { TranscriptPanel } from "@/components/transcript-panel"
 import { DiagramCanvas } from "@/components/diagram-canvas"
 import { ControlPanel } from "@/components/control-panel"
-import { ExportDialog } from "@/components/export-dialog"
 import { MobileDrawer } from "@/components/mobile-drawer"
 import { useTranscript } from "@/hooks/use-transcript"
 import { Button } from "@/components/ui/button"
@@ -17,7 +16,6 @@ export type ViewMode = "mindmap" | "flowchart" | "outline"
 export default function MeetingPage() {
   const [isRecording, setIsRecording] = useState(false)
   const [viewMode, setViewMode] = useState<ViewMode>("mindmap")
-  const [showExportDialog, setShowExportDialog] = useState(false)
   const [showMobileDrawer, setShowMobileDrawer] = useState(false)
   const { transcript, currentSentence, isTranscribing, startTranscription, stopTranscription } = useTranscript()
 
@@ -95,7 +93,7 @@ export default function MeetingPage() {
             onMicToggle={handleMicToggle}
             viewMode={viewMode}
             onViewModeChange={setViewMode}
-            onExport={() => setShowExportDialog(true)}
+            onExport={() => {}}
           />
         </div>
       </div>
@@ -109,18 +107,7 @@ export default function MeetingPage() {
         isTranscribing={isTranscribing}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
-        onExport={() => {
-          setShowMobileDrawer(false)
-          setShowExportDialog(true)
-        }}
-      />
-
-      {/* Export Dialog */}
-      <ExportDialog
-        isOpen={showExportDialog}
-        onClose={() => setShowExportDialog(false)}
-        transcript={transcript}
-        viewMode={viewMode}
+        onExport={() => {}}
       />
     </div>
   )

@@ -379,6 +379,7 @@ export function DiagramCanvas({ transcript, viewMode }: DiagramCanvasProps) {
           transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
           transformOrigin: 'center',
         }}
+        data-canvas="true"
       >
         {nodes.length === 0 ? (
           <div className="flex items-center justify-center h-full">

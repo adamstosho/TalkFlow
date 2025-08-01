@@ -7,7 +7,7 @@ import { MicButton } from "@/components/mic-button"
 import { ViewSwitcher } from "@/components/view-switcher"
 import { ThemeToggle } from "@/components/theme-toggle"
 import type { ViewMode } from "@/app/meeting/page"
-import { Download, Save, RotateCcw, Settings, Activity } from "lucide-react"
+import { Save, RotateCcw, Settings, Activity } from "lucide-react"
 
 interface ControlPanelProps {
   isRecording: boolean
@@ -60,28 +60,6 @@ export function ControlPanel({ isRecording, onMicToggle, viewMode, onViewModeCha
           <ViewSwitcher currentMode={viewMode} onModeChange={onViewModeChange} />
         </Card>
 
-        {/* Export Controls */}
-        <Card className="p-4 border-0 shadow-sm">
-          <div className="flex items-center space-x-2 mb-3">
-            <Download className="w-4 h-4 text-slate-500" />
-            <h3 className="text-sm font-medium text-slate-900 dark:text-white font-['Lexend_Deca']">Export</h3>
-          </div>
-          <div className="space-y-2">
-            <Button 
-              onClick={onExport} 
-              className="w-full justify-start bg-indigo-500 hover:bg-indigo-600 text-white" 
-              variant="default"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Export Diagram
-            </Button>
-            <Button className="w-full justify-start bg-transparent" variant="outline" disabled>
-              <Save className="w-4 h-4 mr-2" />
-              Save Session
-            </Button>
-          </div>
-        </Card>
-
         <Separator />
 
         {/* Session Controls */}
@@ -110,6 +88,7 @@ export function ControlPanel({ isRecording, onMicToggle, viewMode, onViewModeCha
             <li>• Switch views to see different visualizations</li>
             <li>• Drag the canvas to pan around</li>
             <li>• Use zoom controls for detailed view</li>
+            <li>• Click nodes to select and edit them</li>
           </ul>
         </Card>
       </div>
